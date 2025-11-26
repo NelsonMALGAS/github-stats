@@ -2,9 +2,8 @@ name: Generate Pacman Animation
 
 on:
   schedule:
-    # Runs every 12 hours
-    - cron: "0 */12 * * *"
-  workflow_dispatch: # allows manual run
+    - cron: "0 */12 * * *" # every 12 hours
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -20,15 +19,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Generate pacman-contribution-graph.svg
+      # Generate Light Mode SVG
+      - name: Generate Pacman Contribution Graph (Light)
         uses: abozanona/pacman-contribution-graph@main
         with:
           github_user_name: ${{ github.repository_owner }}
+          theme: github-light
+          output_file: pacman-contribution-graph-light.svg
 
-      - name: Push pacman SVG to output branch
+      # Generate Dark Mode SVG
+      - name: Generate Pacman Contribution Graph (Dark)
+        uses: abozanona/pacman-contribution-graph@main
+        with:
+          github_user_name: ${{ github.repository_owner }}
+          theme: dracula
+          output_file: pacman-contribution-graph-dark.svg
+
+      - name: Push SVGs to output branch
         uses: crazy-max/ghaction-github-pages@v3.1.0
         with:
           target_branch: output
-          build_dir: dist
+          build_dir: .
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
